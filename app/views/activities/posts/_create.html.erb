@@ -1,0 +1,5 @@
+<% if (post = activity.trackable) %>
+  created a post: <%= link_to post.title, post %>
+<% else %>
+  This post has been deleted
+<% end %>

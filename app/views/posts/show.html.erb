@@ -21,3 +21,8 @@
   <h3>Add a comment</h3>
   <%= render "comments/form", post: @post, comment: @comment %>
 </section>
+
+<section id="activities">
+  <h2>Activity history</h2>
+  <%= render "activities/list", activities: @activities %>
+</section>

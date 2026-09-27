@@ -11,6 +11,7 @@ class PostsController < ApplicationController
   def show
     @comments = @post.comments.includes(:user).order(:created_at, :id)
     @comment = @post.comments.build
+    @activities = Activity.for_post(@post).preload(:user, :trackable).newest_first
   end
 
   # GET /posts/new

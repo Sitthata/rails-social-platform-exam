@@ -27,6 +27,7 @@
     <nav>
       <% if user_signed_in? %>
         <%= link_to "Posts", posts_path %>
+        <%= link_to "Activity feed", activities_path %>
         <span>Signed in as <%= current_user.email %></span>
         <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
       <% else %>

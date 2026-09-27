@@ -1,0 +1,5 @@
+<% if (comment = activity.trackable) %>
+  commented: <%= link_to comment.body, post_path(comment.post_id, anchor: dom_id(comment)) %>
+<% else %>
+  This comment has been deleted
+<% end %>

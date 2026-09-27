@@ -1,0 +1,7 @@
+<article id="<%= dom_id activity %>">
+  <p>
+    <strong><%= activity.user.email %></strong>
+    <%= render activity_partial(activity), activity: activity %>
+  </p>
+  <%= tag.time activity.created_at.strftime("%Y-%m-%d %H:%M %Z"), datetime: activity.created_at.iso8601 %>
+</article>

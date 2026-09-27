@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root "posts#index"
 
-  get "activities/index"
+  resources :activities, only: :index
   resources :posts do
     resources :comments, only: :create
   end
