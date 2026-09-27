@@ -11,7 +11,7 @@ Build a small Rails social app while learning to explain its code. Practice poly
 - Four models: User, Post, Comment, and Activity.
 - Generate Post and Comment scaffolds, then adapt the generated controllers and views.
 - Generate Activity as a model with an index-only controller for the feed.
-- Create activities through after_create callbacks on Post and Comment. No service objects for this version.
+- Create activities through after_create callbacks on Post and Comment, and record post deletion through before_destroy. No service objects for this version.
 - Work incrementally: discuss each step, let the learner run generator commands, then explain and adapt the generated code together.
 
 ## User stories and acceptance criteria
@@ -70,18 +70,22 @@ As a user, I want to see who created a post and who commented on it so that I ca
 - Comment creation displays a message such as `jane@example.com commented: Hope you have fun`.
 - Activity has no user-facing create, edit, or delete form.
 
-### 6. Preserve history after deleting a post
+### 6. Delete a post and record its deletion
 
-As a user, I want deleted content to disappear while its activity history remains understandable.
+As a user, I want to delete my own post while preserving its activity history so that the feed shows both its creation and deletion.
 
-- Deleting a post also deletes its comments.
+- Only the post author can delete the post. Deleting a post also deletes its comments.
+- Successful deletion creates exactly one new Activity with action `delete`, trackable type `Post`, the deleted post's ID, and the author as actor. Under the current ownership rule, the author is the signed-in user performing deletion.
+- Deletion and its Activity are saved in the same transaction. If either fails, both roll back. Unauthorized or failed deletion creates no Activity.
+- Deleting the post's comments does not create separate deletion activities.
 - Preserve the Activity rows for both the post and its comments, including their original trackable type and ID.
 - The deleted post disappears from the posts list; its former detail URL returns not found.
-- In the global feed, an activity whose Post is missing displays `This post has been deleted`.
-- An activity whose Comment is missing displays `This comment has been deleted`.
+- In the global feed, a creation activity whose Post is missing displays `created a post. This post has been deleted.` after the actor.
+- A creation activity whose Comment is missing displays `created a comment. This comment has been deleted.` after the actor.
+- A post deletion activity displays `deleted a post.` after the actor, with its timestamp and no target link.
 - Retain actor and timestamp, but display no removed content or link to a missing record.
 - Rendering handles a nil trackable without raising an error. Select the event partial using the stored type and action even when the target is missing.
-- Do not create a separate deletion Activity. Existing activities display the missing-target message.
+- Creation and deletion use separate event partials. A shared missing-target partial handles creation activities whose targets have been removed.
 
 ## Data model
 
@@ -113,6 +117,8 @@ Each Post and Comment uses `after_create` to call a small private method that cr
 - The author is the actor for creation events. No current_user lookup inside models is needed.
 - Bulk insertion that bypasses callbacks is outside the supported creation flow.
 
+Post uses `before_destroy :record_deletion, prepend: true` to create its deletion Activity before destroying dependent comments and the post itself. The target still exists during Activity validation. The callback uses `create!`, and a failure rolls back the deletion transaction. Direct SQL deletion and `delete`/`delete_all`, which bypass callbacks, are outside the supported deletion flow.
+
 ## Required model test
 
 Write one meaningful Post model test that creates a valid post and verifies:
@@ -133,7 +139,7 @@ Run with `bin/rails test test/models/post_test.rb`. Explain what each assertion 
 4. Confirm the post history includes both creation events with the correct actors.
 5. Confirm the second user cannot update or delete the first user's post, including direct requests.
 6. As the author, edit the post and confirm no extra Activity appears.
-7. Delete the post and confirm it and its comments are gone while both activities remain with the specified missing-target messages.
+7. Delete the post and confirm it and its comments are gone, both creation activities remain with missing-target messages, and exactly one new post deletion activity appears with the correct actor.
 8. Confirm blank content is rejected and does not create activities.
 9. Sign out and confirm protected pages require sign-in.
 
@@ -149,4 +155,4 @@ Run with `bin/rails test test/models/post_test.rb`. Explain what each assertion 
 
 ## Out of scope
 
-Likes, follows, private posts, notifications, uploads, search, pagination, public registration, account management, comment editing, separate update/delete activities, and production deployment.
+Likes, follows, private posts, notifications, uploads, search, pagination, public registration, account management, comment editing, update activities, separate comment deletion activities, and production deployment.

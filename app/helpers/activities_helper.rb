@@ -2,9 +2,11 @@ module ActivitiesHelper
   def activity_partial(activity)
     case [ activity.trackable_type, activity.action ]
     when [ "Post", "create" ]
-      "activities/posts/create"
+      activity.trackable ? "activities/posts/create" : "activities/missing_target"
+    when [ "Post", "delete" ]
+      "activities/posts/delete"
     when [ "Comment", "create" ]
-      "activities/comments/create"
+      activity.trackable ? "activities/comments/create" : "activities/missing_target"
     else
       "activities/unknown"
     end

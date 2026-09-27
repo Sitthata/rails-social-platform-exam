@@ -1,5 +1,1 @@
-<% if (post = activity.trackable) %>
-  created a post: <%= link_to post.title, post %>
-<% else %>
-  This post has been deleted
-<% end %>
+created a post: <%= link_to activity.trackable.title, activity.trackable %>

@@ -2,7 +2,7 @@ class Activity < ApplicationRecord
   belongs_to :user
   belongs_to :trackable, polymorphic: true
 
-  validates :action, inclusion: { in: %w[create] }
+  validates :action, inclusion: { in: %w[create delete] }
 
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
 
