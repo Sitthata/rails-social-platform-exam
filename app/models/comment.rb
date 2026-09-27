@@ -5,4 +5,12 @@ class Comment < ApplicationRecord
   has_many :activities, as: :trackable
 
   validates :body, presence: true
+
+  after_create :record_creation
+
+  private
+
+    def record_creation
+      activities.create!(user: user, action: "create")
+    end
 end

@@ -143,7 +143,7 @@ Run with `bin/rails test test/models/post_test.rb`. Explain what each assertion 
 2. Generate Post and Comment scaffolds and the Activity model and index controller.
 3. Review migrations and indexes together before migrating.
 4. Add associations, validations, authentication, ownership checks, and development seed accounts.
-5. Write the model test, observe its failure without tracking, and add callbacks to make it pass.
+5. Add the creation callbacks and explore their behavior in the console. Write the required model test later; test-first development is not required for this project.
 6. Build the post history, global feed, and event partials.
 7. Implement deletion behavior and run the manual checks.
 
