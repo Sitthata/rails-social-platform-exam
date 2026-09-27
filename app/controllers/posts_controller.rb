@@ -1,18 +1,21 @@
 class PostsController < ApplicationController
-  before_action :set_post, only: %i[ show edit update destroy ]
+  before_action :set_post, only: :show
+  before_action :set_owned_post, only: %i[ edit update destroy ]
 
   # GET /posts or /posts.json
   def index
-    @posts = Post.all
+    @posts = Post.includes(:user)
   end
 
   # GET /posts/1 or /posts/1.json
   def show
+    @comments = @post.comments.includes(:user).order(:created_at, :id)
+    @comment = @post.comments.build
   end
 
   # GET /posts/new
   def new
-    @post = Post.new
+    @post = current_user.posts.build
   end
 
   # GET /posts/1/edit
@@ -21,7 +24,7 @@ class PostsController < ApplicationController
 
   # POST /posts or /posts.json
   def create
-    @post = Post.new(post_params)
+    @post = current_user.posts.build(post_params)
 
     respond_to do |format|
       if @post.save
@@ -58,13 +61,15 @@ class PostsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_post
       @post = Post.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
+    def set_owned_post
+      @post = current_user.posts.find(params.expect(:id))
+    end
+
     def post_params
-      params.expect(post: [ :title, :body, :user_id ])
+      params.expect(post: [ :title, :body ])
     end
 end

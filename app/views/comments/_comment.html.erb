@@ -5,13 +5,13 @@
   </div>
 
   <div>
-    <strong>Post:</strong>
-    <%= comment.post_id %>
+    <strong>Author:</strong>
+    <%= comment.user.email %>
   </div>
 
   <div>
-    <strong>User:</strong>
-    <%= comment.user_id %>
+    <strong>Created:</strong>
+    <%= tag.time comment.created_at.strftime("%Y-%m-%d %H:%M %Z"), datetime: comment.created_at.iso8601 %>
   </div>
 
 </div>

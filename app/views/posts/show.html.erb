@@ -1,8 +1,23 @@
 <%= render @post %>
 
 <div>
-  <%= link_to "Edit this post", edit_post_path(@post) %> |
   <%= link_to "Back to posts", posts_path %>
 
-  <%= button_to "Destroy this post", @post, method: :delete %>
+  <% if @post.user_id == current_user.id %>
+    <%= link_to "Edit this post", edit_post_path(@post) %>
+    <%= button_to "Delete this post", @post, method: :delete %>
+  <% end %>
 </div>
+
+<section id="comments">
+  <h2>Comments</h2>
+
+  <% if @comments.any? %>
+    <%= render @comments %>
+  <% else %>
+    <p>No comments yet.</p>
+  <% end %>
+
+  <h3>Add a comment</h3>
+  <%= render "comments/form", post: @post, comment: @comment %>
+</section>
