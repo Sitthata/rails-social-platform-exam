@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root "posts#index"
+
   get "activities/index"
   resources :comments
   resources :posts
