@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "activities/index"
   resources :comments
   resources :posts
   devise_for :users
